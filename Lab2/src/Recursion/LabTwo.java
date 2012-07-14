@@ -22,7 +22,6 @@ public class LabTwo {
 		String			z;
 		int [][] 		intArray;
 		String []		stringArray;
-    	int 			maxItems;
     	int 			index;
 		
 		lab = new LabTwo();
@@ -47,28 +46,35 @@ public class LabTwo {
         z = lab.readMatrix(input);
         index = 0;
         while (z != null) {
-        	
-        	stringArray = z.split(" ");
-            maxItems = stringArray.length;
-        	//intArray = new int [maxItems];
-        	intArray = new int [2][2];
+       
+        	intArray = new int [5][5];
             
         	// check for empty strings before parsing
         	if (z.length() == 0) {
         		continue;
         	}
         	
-        	// parse the integers from the string array and place them into an integer array for processing
-        	for (int i = 0; i < maxItems; i++) {
+        	// parse the integers from the string array and place them into an integer array for processing.
+        	for (int i = 0; i < intArray.length; i++) {
+        		stringArray = z.split(" ");
+        		index = 0;
         		
-        		intArray[index++] = Integer.parseInt(stringArray[i]);
+        		//System.out.println("eye = " + i);
+        		//System.out.println("LENGTH = " + intArray[i].length);
+        		
+        		for (int j = 0; j < intArray[i].length; j++) {
+        			intArray[i][j] = Integer.parseInt(stringArray[index]);
+        			
+        			//System.out.println(stringArray[j]);
+        			//System.out.println("intArray " + intArray[i][j]);
+        			
+        			index++;
+        		}
+        		
+        		z = lab.readMatrix(input);
         	}
-        	
-        	System.out.println(Arrays.toString(intArray));
-        	//lab.writeOutput(intArray, output);
-        	
-        	z = lab.readMatrix(input);
-        	index = 0;
+        
+        	lab.writeOutput(intArray, output);
         }
         
         // Close the input and output files and return to OS.
@@ -101,15 +107,21 @@ public class LabTwo {
 	}
 	
 	/**
-	 * Write the output results to the output file.
+	 * Write the results to the output file.
 	 * @param w
 	 * @param output	the output file.
 	 */
-	private void writeOutput(int[] array, BufferedWriter output) {
+	private void writeOutput(int[][] intArray, BufferedWriter output) {
 		
 		 try {
-			 	output.write(Arrays.toString(array));
-			 	output.newLine();
+			 	for (int i = 0; i < intArray.length; i++){
+	        		for (int j = 0; j < intArray.length; j++){
+	        			
+	        			output.write(intArray[i][j] + " ");
+	        		}
+	        		
+	        		output.newLine();
+			 	}
 	        } catch (IOException ioException) {
 	            System.err.println(ioException.toString());
 	            System.exit(3);
