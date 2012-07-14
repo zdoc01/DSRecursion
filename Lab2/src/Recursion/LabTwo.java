@@ -20,13 +20,15 @@ public class LabTwo {
 		BufferedWriter 	output;
 		LabTwo			lab;
 		String			z;
-		int [][] 		intArray;
 		String []		stringArray;
+		int [][] 		intArray;
+		int [][]		minor;
     	int 			index;
+    	int				dimension;
 		
 		lab = new LabTwo();
 		
-		//  Check that there are two command line arguments.
+		//  Check for two command line arguments.
         if (args.length != 2) {
             System.out.println("Usage:  java LabOne [input file]" +
                 " [output file]");
@@ -42,19 +44,22 @@ public class LabTwo {
             return;
         }
         
-        // testing the input and output files
+        // process the input by setting the dimension of the matrix and storing the matrix in a 2D array.
         z = lab.readMatrix(input);
         index = 0;
         while (z != null) {
-       
-        	intArray = new int [5][5];
-            
+        	
+        	// set the first line of input as the dimension of the matrix then process the matrix
+        	dimension = Integer.parseInt(z);
+        	intArray = new int [dimension][dimension];
+        	z = lab.readMatrix(input);
+        	
         	// check for empty strings before parsing
         	if (z.length() == 0) {
         		continue;
         	}
         	
-        	// parse the integers from the string array and place them into an integer array for processing.
+        	// parse the integers and place them into an integer array for processing.
         	for (int i = 0; i < intArray.length; i++) {
         		stringArray = z.split(" ");
         		index = 0;
@@ -73,7 +78,9 @@ public class LabTwo {
         		
         		z = lab.readMatrix(input);
         	}
-        
+        	
+        	//System.out.print(Arrays.deepToString(intArray));
+        	minor = lab.minor(intArray);
         	lab.writeOutput(intArray, output);
         }
         
@@ -128,5 +135,50 @@ public class LabTwo {
 	        }
 	        
 	        return;
+	}
+	
+	public int[][] minor (int[][] intArray) {
+		
+		int		p;
+		int		q;
+		int		matrixSize;
+		int[][]	minorArray;
+		
+		System.out.println("intArray = " + Arrays.deepToString(intArray));
+		
+		matrixSize = intArray.length;
+		minorArray = new int[matrixSize][matrixSize];
+		
+		// if the matrix is 1x1 - return the value in the matrix as the minor.
+		// else calculate the minor of the matrix by excluding the first row and column from the original matrix.
+		if (matrixSize == 1) {
+			minorArray[0][0] = intArray[0][0];
+			System.out.println("minorArray = " + Arrays.deepToString(minorArray));
+			return minorArray;
+		}
+		else
+			minorArray = new int[matrixSize-1][matrixSize-1];
+			
+			p = 0;
+			for (int i = 0; i < matrixSize; i++) {
+				
+				if (i == 0)
+					continue;
+				
+				q = 0;
+				for (int j = 0; j < intArray[i].length; j++) {
+					
+					if (j == 0)
+						continue;
+					
+					minorArray[p][q] = intArray[i][j];
+					q++;
+				}
+				
+				p++;
+			}
+			
+			System.out.println("minorArray = " + Arrays.deepToString(minorArray));
+			return minorArray;
 	}
 }
