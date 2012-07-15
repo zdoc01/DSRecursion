@@ -29,7 +29,7 @@ public class LabTwo {
 		
 		//  Check for two command line arguments.
         if (args.length != 2) {
-            System.out.println("Usage:  java LabOne [input file]" +
+            System.out.println("Usage:  java Recursion.LabTwo [input file]" +
                 " [output file]");
             System.exit(1);
         }
