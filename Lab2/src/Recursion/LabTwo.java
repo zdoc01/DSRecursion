@@ -5,13 +5,12 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class LabTwo {
 
 	/**
-	 * Entry point for the program. Reads in the file and stores the matrix. Runs the matrix through the
-	 * determinant function to calculate the determinant.
+	 * Entry point for the program. Reads in the file and stores the matrix. Runs the stored matrix through the
+	 * determinant method to calculate the determinant.
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -22,9 +21,9 @@ public class LabTwo {
 		String			z;
 		String []		stringArray;
 		int [][] 		intArray;
-		int [][]		minor;
     	int 			index;
     	int				dimension;
+    	int				det;
 		
 		lab = new LabTwo();
 		
@@ -50,8 +49,14 @@ public class LabTwo {
         while (z != null) {
         	
         	// set the first line of input as the dimension of the matrix then process the matrix
-        	dimension = Integer.parseInt(z);
-        	intArray = new int [dimension][dimension];
+        	try {
+        		dimension = Integer.parseInt(z);
+            	intArray = new int [dimension][dimension];
+        	} catch (Exception exception) {
+        		System.err.println(exception.toString());
+                return;
+        	}
+        	
         	z = lab.readMatrix(input);
         	
         	// check for empty strings before parsing
@@ -64,14 +69,14 @@ public class LabTwo {
         		stringArray = z.split(" ");
         		index = 0;
         		
-        		//System.out.println("eye = " + i);
-        		//System.out.println("LENGTH = " + intArray[i].length);
-        		
         		for (int j = 0; j < intArray[i].length; j++) {
-        			intArray[i][j] = Integer.parseInt(stringArray[index]);
         			
-        			//System.out.println(stringArray[j]);
-        			//System.out.println("intArray " + intArray[i][j]);
+        			try {
+        				intArray[i][j] = Integer.parseInt(stringArray[index]);
+        			} catch (Exception exception) {
+        				System.err.println(exception.toString());
+                        return;
+                	}
         			
         			index++;
         		}
@@ -79,9 +84,11 @@ public class LabTwo {
         		z = lab.readMatrix(input);
         	}
         	
-        	//System.out.print(Arrays.deepToString(intArray));
-        	minor = lab.minor(intArray);
-        	lab.writeOutput(intArray, output);
+        	// calculate the determinant
+        	det = lab.Determinant(intArray);
+        	
+        	// send data to output
+        	lab.writeOutput(intArray, det, output);
         }
         
         // Close the input and output files and return to OS.
@@ -95,9 +102,9 @@ public class LabTwo {
 	}
 	
 	/**
-	 * Read in the first string of characters from the input file.
+	 * Read in the strings of integers from the input file.
 	 * @param input		the first string in the input file.
-	 * @return The first string of characters.
+	 * @return The first string of integers.
 	 */
 	private String readMatrix(BufferedReader input) {
 		
@@ -114,13 +121,18 @@ public class LabTwo {
 	}
 	
 	/**
-	 * Write the results to the output file.
-	 * @param w
+	 * Write the results to the output file in an easy-to-read format.
+	 * @param intArray	the original matrix passed into the program
+	 * @param det		the value of the determinant for the matrix.
 	 * @param output	the output file.
 	 */
-	private void writeOutput(int[][] intArray, BufferedWriter output) {
+	private void writeOutput(int[][] intArray, int det, BufferedWriter output) {
 		
 		 try {
+			 	output.write("The following matrix:");
+			 	output.newLine();
+			 	output.newLine();
+			 	
 			 	for (int i = 0; i < intArray.length; i++){
 	        		for (int j = 0; j < intArray.length; j++){
 	        			
@@ -129,6 +141,15 @@ public class LabTwo {
 	        		
 	        		output.newLine();
 			 	}
+			 	
+			 	output.newLine();
+			 	output.write("Has a determinant value of " + det + ".");
+			 	output.newLine();
+			 	output.newLine();
+			 	output.write("---------------------------------------");
+			 	output.newLine();
+			 	output.newLine();
+			 	
 	        } catch (IOException ioException) {
 	            System.err.println(ioException.toString());
 	            System.exit(3);
@@ -137,27 +158,31 @@ public class LabTwo {
 	        return;
 	}
 	
-	public int[][] minor (int[][] intArray) {
+	/**
+	 * Compute the minor of the matrix array passed into the application.
+	 * @param intArray	The matrix passed into the method.
+	 * @param j			The column value to be removed to compute the minor.
+	 * @return The minor of the passed-in matrix.
+	 */
+	public int[][] Minor (int[][] intArray, int j) {
 		
 		int		p;
 		int		q;
 		int		matrixSize;
-		int[][]	minorArray;
-		
-		System.out.println("intArray = " + Arrays.deepToString(intArray));
+		int[][]	minor;
 		
 		matrixSize = intArray.length;
-		minorArray = new int[matrixSize][matrixSize];
+		minor = new int[matrixSize][matrixSize];
 		
 		// if the matrix is 1x1 - return the value in the matrix as the minor.
-		// else calculate the minor of the matrix by excluding the first row and column from the original matrix.
+		// else calculate the minor of the matrix by creating a new array (the minor) which excludes
+		// the first row and jth column from the original matrix.
 		if (matrixSize == 1) {
-			minorArray[0][0] = intArray[0][0];
-			System.out.println("minorArray = " + Arrays.deepToString(minorArray));
-			return minorArray;
+			minor[0][0] = intArray[0][0];
+			return minor;
 		}
 		else
-			minorArray = new int[matrixSize-1][matrixSize-1];
+			minor = new int[matrixSize-1][matrixSize-1];
 			
 			p = 0;
 			for (int i = 0; i < matrixSize; i++) {
@@ -166,19 +191,47 @@ public class LabTwo {
 					continue;
 				
 				q = 0;
-				for (int j = 0; j < intArray[i].length; j++) {
+				for (int z = 0; z < intArray[i].length; z++) {
 					
-					if (j == 0)
+					if (z == j)
 						continue;
 					
-					minorArray[p][q] = intArray[i][j];
+					minor[p][q] = intArray[i][z];
 					q++;
 				}
 				
 				p++;
 			}
 			
-			System.out.println("minorArray = " + Arrays.deepToString(minorArray));
-			return minorArray;
+			return minor;
+	}
+	
+	/**
+	 * Compute the determinant of the matrix passed into the application
+	 * @param intArray	The original matrix passed into the program and each subsequent matrix created by the method 'minor'.
+	 * @return The value of the determinant of the matrix.
+	 */
+	public int Determinant (int[][] intArray) {
+		
+		int[][]		minor;
+		int			det;
+		int			i;
+		
+		det = 0;
+		i = 0;
+		
+		// if the matrix is 1x1 - return that value as the determinant.
+		// else compute the sum of the products and return the determinant.
+		for (int j = 0; j < intArray[i].length; j++) {
+				
+			if (intArray.length == 1) {
+				return intArray[0][0];
+			}
+			else
+				minor = this.Minor(intArray, j);
+				det += (int) Math.pow(-1, (i + j))*intArray[i][j]*Determinant(minor);
+			}
+
+		return det;
 	}
 }
