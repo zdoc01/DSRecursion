@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class LabTwo {
 
@@ -197,11 +198,14 @@ public class LabTwo {
 						continue;
 					
 					minor[p][q] = intArray[i][z];
+
 					q++;
 				}
-				
+			
 				p++;
 			}
+			
+			System.out.println(Arrays.deepToString(minor));
 			
 			return minor;
 	}
@@ -223,11 +227,12 @@ public class LabTwo {
 		// if the matrix is 1x1 - return that value as the determinant.
 		// else compute the sum of the products and return the determinant.
 		for (int j = 0; j < intArray[i].length; j++) {
-				
+			
 			if (intArray.length == 1) {
 				return intArray[0][0];
 			}
 			else
+				//System.out.println(intArray[i][j]);
 				minor = this.Minor(intArray, j);
 				det += (int) Math.pow(-1, (i + j))*intArray[i][j]*Determinant(minor);
 			}
